@@ -22,8 +22,16 @@ import java.util.concurrent.atomic.AtomicReference;
 import reactor.netty.DisposableServer;
 
 import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
+import reactor.netty.http.server.HttpServer;
+import reactor.netty.http.server.HttpServerRequest;
+import reactor.netty.http.server.HttpServerResponse;
 
 /**
+ * spring webflux的响应式 http server 的实现类
+ * 这里利用 reactor.netty 提供的{@link reactor.netty.http.server.HttpServer}中的{@link HttpServer.HttpServerHandle}类
+ * 传入一个自定义的 {@link BiFunction<? super  HttpServerRequest , ? super  HttpServerResponse , ? extends Publisher<Void>> handler}
+ * 来接受http响应在各个阶段的变化即状态，这里即是：{@link ReactorHttpServer#reactorHandler}
+ *
  * @author Stephane Maldini
  */
 public class ReactorHttpServer extends AbstractHttpServer {

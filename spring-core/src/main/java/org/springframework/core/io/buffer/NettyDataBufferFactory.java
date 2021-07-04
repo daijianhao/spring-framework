@@ -30,6 +30,8 @@ import org.springframework.util.Assert;
  * Implementation of the {@code DataBufferFactory} interface based on a
  * Netty {@link ByteBufAllocator}.
  *
+ * 基于netty的ByteBufAllocator实现的 内存分配器
+ * 也有基于 JDK ByteBuffer 的实现类
  * @author Arjen Poutsma
  * @author Juergen Hoeller
  * @since 5.0

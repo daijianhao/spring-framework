@@ -124,6 +124,9 @@ public class DispatcherHandler implements WebHandler, PreFlightRequestHandler, A
 		AnnotationAwareOrderComparator.sort(mappings);
 		this.handlerMappings = Collections.unmodifiableList(mappings);
 
+		/**
+		 * 从容器中获取所有处理器适配器
+		 */
 		Map<String, HandlerAdapter> adapterBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(
 				context, HandlerAdapter.class, true, false);
 
@@ -138,6 +141,11 @@ public class DispatcherHandler implements WebHandler, PreFlightRequestHandler, A
 	}
 
 
+	/**
+	 * 开始处理，类似dispatcherServlet
+	 * @param exchange the current server exchange
+	 * @return
+	 */
 	@Override
 	public Mono<Void> handle(ServerWebExchange exchange) {
 		if (this.handlerMappings == null) {
@@ -146,11 +154,14 @@ public class DispatcherHandler implements WebHandler, PreFlightRequestHandler, A
 		if (CorsUtils.isPreFlightRequest(exchange.getRequest())) {
 			return handlePreFlight(exchange);
 		}
+		//遍历处理器映射，找到一个来处理当前exchange
 		return Flux.fromIterable(this.handlerMappings)
 				.concatMap(mapping -> mapping.getHandler(exchange))
 				.next()
 				.switchIfEmpty(createNotFoundError())
+				//处理
 				.flatMap(handler -> invokeHandler(exchange, handler))
+				//处理结果
 				.flatMap(result -> handleResult(exchange, result));
 	}
 
@@ -168,6 +179,7 @@ public class DispatcherHandler implements WebHandler, PreFlightRequestHandler, A
 		if (this.handlerAdapters != null) {
 			for (HandlerAdapter handlerAdapter : this.handlerAdapters) {
 				if (handlerAdapter.supports(handler)) {
+					//处理器适配器进行处理
 					return handlerAdapter.handle(exchange, handler);
 				}
 			}

@@ -61,16 +61,26 @@ public class ContextPathCompositeHandler implements HttpHandler {
 	}
 
 
+	/**
+	 *
+	 * 会调用到这个handle方法
+	 * 此处的handler更像是一个 servlet的概念
+	 */
 	@Override
 	public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
 		// Remove underlying context path first (e.g. Servlet container)
 		String path = request.getPath().pathWithinApplication().value();
+		//从handlerMap中选出一个handler来处理当前请求
 		return this.handlerMap.entrySet().stream()
+				//找到path开头的
 				.filter(entry -> path.startsWith(entry.getKey()))
+				//取第一个
 				.findFirst()
 				.map(entry -> {
 					String contextPath = request.getPath().contextPath().value() + entry.getKey();
+					//修改contextpath
 					ServerHttpRequest newRequest = request.mutate().contextPath(contextPath).build();
+					//使用指定handler进一步处理
 					return entry.getValue().handle(newRequest, response);
 				})
 				.orElseGet(() -> {

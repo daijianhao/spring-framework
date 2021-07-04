@@ -197,6 +197,7 @@ public abstract class AbstractHandlerMapping extends ApplicationObjectSupport
 				if (config != null) {
 					config.validateAllowCredentials();
 				}
+				//处理跨域
 				if (!this.corsProcessor.process(config, exchange) || CorsUtils.isPreFlightRequest(request)) {
 					return NO_OP_HANDLER;
 				}

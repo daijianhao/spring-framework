@@ -225,6 +225,12 @@ public class HttpWebHandlerAdapter extends WebHandlerDecorator implements HttpHa
 	}
 
 
+	/**
+	 * http处理器适配器
+	 * @param request current request
+	 * @param response current response
+	 * @return
+	 */
 	@Override
 	public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
 		if (this.forwardedHeaderTransformer != null) {
@@ -239,6 +245,7 @@ public class HttpWebHandlerAdapter extends WebHandlerDecorator implements HttpHa
 				return response.setComplete();
 			}
 		}
+		//将request与response包装为exchange
 		ServerWebExchange exchange = createExchange(request, response);
 
 		LogFormatUtils.traceDebug(logger, traceOn ->

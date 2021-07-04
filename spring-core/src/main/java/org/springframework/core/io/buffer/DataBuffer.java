@@ -51,6 +51,8 @@ import org.springframework.util.Assert;
  * around {@link ByteBuffer} which is similar to Netty's {@link io.netty.buffer.ByteBuf} but
  * can also be used on non-Netty platforms (i.e. Servlet containers).
  *
+ * spring 抽象的一种 类似 byteBuffer 的实现，主要底层委托 netty byteBuf 和 jdk bytebuffer 等实现
+ *
  * @author Arjen Poutsma
  * @author Brian Clozel
  * @since 5.0

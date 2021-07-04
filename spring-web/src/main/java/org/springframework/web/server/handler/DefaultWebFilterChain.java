@@ -58,6 +58,7 @@ public class DefaultWebFilterChain implements WebFilterChain {
 
 	/**
 	 * Public constructor with the list of filters and the target handler to use.
+	 *
 	 * @param handler the target handler
 	 * @param filters the filters ahead of the handler
 	 * @since 5.1
@@ -71,6 +72,13 @@ public class DefaultWebFilterChain implements WebFilterChain {
 		this.chain = chain.chain;
 	}
 
+
+	/**
+	 * 此处的过滤器链采用层层包装的方式，没执行一次就减少一层，与以前的利用索引方式不太一样
+	 * @param filters
+	 * @param handler
+	 * @return
+	 */
 	private static DefaultWebFilterChain initChain(List<WebFilter> filters, WebHandler handler) {
 		DefaultWebFilterChain chain = new DefaultWebFilterChain(filters, handler, null, null);
 		ListIterator<? extends WebFilter> iterator = filters.listIterator(filters.size());
@@ -84,7 +92,7 @@ public class DefaultWebFilterChain implements WebFilterChain {
 	 * Private constructor to represent one link in the chain.
 	 */
 	private DefaultWebFilterChain(List<WebFilter> allFilters, WebHandler handler,
-			@Nullable WebFilter currentFilter, @Nullable DefaultWebFilterChain chain) {
+								  @Nullable WebFilter currentFilter, @Nullable DefaultWebFilterChain chain) {
 
 		this.allFilters = allFilters;
 		this.currentFilter = currentFilter;
@@ -94,6 +102,7 @@ public class DefaultWebFilterChain implements WebFilterChain {
 
 	/**
 	 * Public constructor with the list of filters and the target handler to use.
+	 *
 	 * @param handler the target handler
 	 * @param filters the filters ahead of the handler
 	 * @deprecated as of 5.1 this constructor is deprecated in favor of
@@ -117,11 +126,20 @@ public class DefaultWebFilterChain implements WebFilterChain {
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange) {
 		return Mono.defer(() ->
+				//一直执行过滤器知道执行完成
 				this.currentFilter != null && this.chain != null ?
 						invokeFilter(this.currentFilter, this.chain, exchange) :
 						this.handler.handle(exchange));
 	}
 
+	/**
+	 * 执行过滤器链
+	 *
+	 * @param current
+	 * @param chain
+	 * @param exchange
+	 * @return
+	 */
 	private Mono<Void> invokeFilter(WebFilter current, DefaultWebFilterChain chain, ServerWebExchange exchange) {
 		String currentName = current.getClass().getName();
 		return current.filter(exchange, chain).checkpoint(currentName + " [DefaultWebFilterChain]");

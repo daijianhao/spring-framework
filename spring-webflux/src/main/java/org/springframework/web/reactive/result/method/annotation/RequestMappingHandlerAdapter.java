@@ -47,7 +47,7 @@ import org.springframework.web.server.ServerWebExchange;
  * Supports the invocation of
  * {@link org.springframework.web.bind.annotation.RequestMapping @RequestMapping}
  * handler methods.
- *
+ * 使用{@link org.springframework.web.bind.annotation.RequestMapping @RequestMapping}注解的controller方法会用此适配处理
  * @author Rossen Stoyanchev
  * @since 5.0
  */
